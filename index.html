@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tic Tac Toe</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap" rel="stylesheet">
+
+</head>
+
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: 'Cinzel', serif;
+    }
+    
+    .playbuttons{
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid white;
+        box-shadow: 1px 1px 10px black;
+        cursor: pointer;
+        color: rgb(243, 81, 89);
+        width: 80px;
+        height: 80px;
+        font-size: 42px;
+        font-weight:bolder;
+        font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        transition: .5s;
+    }
+    #outer{
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-image: url('bg2.jpg');
+        background-size: cover;
+        text-align: center;
+        z-index: 1;
+    }
+    #Gamename{
+        padding-bottom: 15px;
+        color: white;
+        text-align: center;
+    }
+    .inner{
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid rgba(255, 255, 255, 0);
+        width: 270px;
+        height: 250px;
+        row-gap: 10px;
+        column-gap: 10px;
+    }
+    #Restart{
+        margin-top: 35px;
+        padding: 10px 15px;
+        background-color: rgba(0, 0, 255, 0.027);
+        border: 1px solid #ffffff;
+        border-radius: 10px;
+        color: white;
+        transition: .5s;
+        cursor: pointer;
+    }
+    .popup{
+        width: 100%;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+        background-image: url('bg2.jpg');
+        background-size: cover;
+        cursor: pointer;
+    }
+    #newgame{
+        margin-top: 10px;
+        padding: 10px 15px;
+        background-color: rgba(0, 0, 255, 0);
+        border: 1px solid #ffffff;
+        border-radius: 10px;
+        color: white;
+        transition: .5s;
+    }
+    .popup.hide{
+        display: none;
+    }
+    #Result{
+        color: white;
+        transition: .5s;
+    }
+    #Restart:hover{
+        background-color: rgba(255, 0, 0, 0.884);
+        scale: 1.1;
+        transition: .5s;
+    }
+    #Result:hover{
+        scale: 1.1;
+        transition: .5s;
+    }
+    #newgame:hover{
+        background-color: rgba(0, 255, 0, 0.733);
+        scale: 1.1;
+        transition: .5s;
+    }
+    .playbuttons:hover{
+        scale: 1.1;
+        transition: .5s;
+    }
+    
+</style>
+<body>
+    <div id="outer">
+        <h1 id="Gamename">Tic Tac Toe</h1>
+        <div class="inner">
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+            <button class="playbuttons"></button>
+        </div>
+        <button id="Restart">Restart</button>
+    </div>
+    <div class="popup hide">
+        <h1 id="Result">Winner</h1>
+        <button id="newgame">New Game</button>
+    </div>
+</body>
+<script>
+    let playbtn = document.querySelectorAll(".playbuttons")
+    let restartbtn = document.getElementById("Restart")
+    let popupbtn = document.querySelector(".popup")
+    let winnertxt = document.getElementById("Result")
+    let newgamebtn = document.getElementById("newgame")
+
+    let winningPattern = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+
+    let xTurn = true
+    let count = 0
+
+    // Disable btn and Show Popup
+    const disableButtons = () => {
+    playbtn.forEach((element) => (element.disabled = true));
+    popupbtn.classList.remove("hide");
+    };
+
+    //Enable btn and Hide Popup
+    const enableButtons = () => {
+    playbtn.forEach((element) => {
+    element.innerText = "";
+    element.disabled = false;
+    });
+    popupbtn.classList.add("hide");
+    };
+
+    // Win or Draw 
+    const winFunction = (letter) => {
+    disableButtons();
+    if (letter == "X") {
+        winnertxt.innerHTML = "Player X Wins";
+    } else {
+        winnertxt.innerHTML = "Player O Wins";
+    }
+    };
+
+    const drawFunction = () => {
+    disableButtons();
+    winnertxt.innerHTML = "Draw Match !";
+    };
+
+    //Newgame and Restart
+    newgamebtn.addEventListener("click", () => {
+    count = 0;
+    enableButtons();
+    });
+    restartbtn.addEventListener("click", () => {
+    count = 0;
+    enableButtons();
+    });
+
+
+    // Win Logic
+    const winChecker = () => {
+  //Loop through all win patterns
+  for (let i of winningPattern) {
+    let [element1, element2, element3] = [
+      playbtn[i[0]].innerText,
+      playbtn[i[1]].innerText,
+      playbtn[i[2]].innerText,
+    ];
+    //Check if elements are filled
+    //If 3 empty elements are same and would give win as would
+    if (element1 != "" && (element2 != "") & (element3 != "")) {
+      if (element1 == element2 && element2 == element3) {
+        //If all 3 buttons have same values then pass the value to winFunction
+        winFunction(element1);
+      }
+    }
+  }
+};
+
+//Display X and O
+
+playbtn.forEach((element) => {
+  element.addEventListener("click", () => {
+    if (xTurn) {
+      xTurn = false;
+      element.innerText = "X";
+      
+    } else {
+      xTurn = true;
+      element.innerText = "O";
+      
+    } 
+    count += 1;
+    if (count == 9) {
+      drawFunction();
+    }
+   
+    winChecker();
+  });
+});
+
+
+window.onload = enableButtons;
+</script>
+</html>
